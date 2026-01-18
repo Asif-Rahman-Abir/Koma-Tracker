@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
 import { useLibrary } from '../hooks/useLibrary';
 import { CheckCircle, PlusCircle, MonitorPlay, Star, Trash2 } from 'lucide-react';
@@ -13,6 +13,12 @@ export default function Anime() {
     const libraryItem = library.find(item => item.media_id === mediaId);
 
     const [epProgress, setEpProgress] = useState(0);
+
+    const DIRECT_TYPES = ['PREQUEL', 'SEQUEL', 'PARENT', 'ADAPTATION', 'SIDE_STORY', 'SPIN_OFF'];
+
+    const relations = data.relations?.edges || [];
+    const directRelations = relations.filter((edge: any) => DIRECT_TYPES.includes(edge.relationType));
+    const otherRelations = relations.filter((edge: any) => !DIRECT_TYPES.includes(edge.relationType));
 
     useEffect(() => {
         if (libraryItem) {
@@ -176,30 +182,64 @@ export default function Anime() {
                             <div dangerouslySetInnerHTML={{ __html: data.description }} />
                         </div>
 
-                        {/* Relations Section */}
-                        {data.relations?.edges?.length > 0 && (
-                            <div className="mt-12">
-                                <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Related Content</h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
-                                    {data.relations.edges.map((edge: any) => (
-                                        <div key={edge.node.id} className="group cursor-pointer">
-                                            <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2">
-                                                <img
-                                                    src={edge.node.coverImage.medium}
-                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                    alt={edge.node.title.romaji}
-                                                />
-                                                <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/80 rounded text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-                                                    {edge.node.type}
+                        {/* Relations Sections */}
+                        <div className="space-y-12 mt-12">
+                            {directRelations.length > 0 && (
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Direct Relations</h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+                                        {directRelations.map((edge: any) => (
+                                            <Link
+                                                key={edge.node.id}
+                                                to={`/${edge.node.type.toLowerCase()}/${edge.node.id}`}
+                                                className="group cursor-pointer"
+                                            >
+                                                <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2 shadow-lg">
+                                                    <img
+                                                        src={edge.node.coverImage.medium}
+                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                        alt={edge.node.title.romaji}
+                                                    />
+                                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-purple-600 rounded text-[10px] font-bold uppercase text-white shadow-xl">
+                                                        {edge.node.type}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="text-xs text-purple-400 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
-                                            <div className="line-clamp-2 text-sm font-medium text-neutral-200 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
-                                        </div>
-                                    ))}
+                                                <div className="text-xs text-purple-400 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
+                                                <div className="line-clamp-2 text-sm font-medium text-neutral-200 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+
+                            {otherRelations.length > 0 && (
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Related Content</h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 opacity-80 hover:opacity-100 transition-opacity">
+                                        {otherRelations.map((edge: any) => (
+                                            <Link
+                                                key={edge.node.id}
+                                                to={`/${edge.node.type.toLowerCase()}/${edge.node.id}`}
+                                                className="group cursor-pointer"
+                                            >
+                                                <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2">
+                                                    <img
+                                                        src={edge.node.coverImage.medium}
+                                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                                        alt={edge.node.title.romaji}
+                                                    />
+                                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/80 rounded text-[10px] font-bold uppercase text-white backdrop-blur-sm">
+                                                        {edge.node.type}
+                                                    </div>
+                                                </div>
+                                                <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
+                                                <div className="line-clamp-2 text-sm font-medium text-neutral-400 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                 </div>
