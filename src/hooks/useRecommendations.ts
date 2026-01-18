@@ -37,26 +37,13 @@ export function useRecommendations(type: 'ANIME' | 'MANGA' = 'ANIME') {
                 return data.Page.media;
             }
 
-            // 1. Aggregate Genres
-            const genreMap: Record<string, number> = {};
-            library.forEach(item => {
-                // Since we don't store genres in our DB, we'd ideally need them.
-                // However, for this "robust" version without changing schema:
-                // We will use the genres from the items currently in the library
-                // Wait, our library table doesn't have genres.
-                // This means we need to either:
-                // a) Add genres to the table (schema change)
-                // b) Fetch details for EVERY library item (expensive)
-                // c) Or, as a simpler "robust" approach, we can use the "Similar Content" of the most recently updated item.
-
-                // Better approach: Let's assume the user wants recommendations based on what's IN their library.
-                // Since I can't easily get genres for all, I'll update the useLibrary to maybe include genres?
-                // Or I can just fetch recommendations for the last 3 updated items and merge them.
-            });
-
             // Re-evaluating: Let's fetch recommendations for the top 3 most recently updated items
             const recentItems = [...library]
-                .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+                .sort((a, b) => {
+                    const dateA = a.updated_at ? new Date(a.updated_at).getTime() : -Infinity;
+                    const dateB = b.updated_at ? new Date(b.updated_at).getTime() : -Infinity;
+                    return dateB - dateA;
+                })
                 .slice(0, 3);
 
             if (recentItems.length === 0) return [];
