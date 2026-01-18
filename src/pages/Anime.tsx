@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
 import { useLibrary } from '../hooks/useLibrary';
-import { CheckCircle, MonitorPlay, Star, Trash2, Clock } from 'lucide-react';
+import { CheckCircle, MonitorPlay, Star, Trash2, Clock, Play } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import clsx from 'clsx';
+import { PlayerModal } from '../components/ui/PlayerModal';
 
 export default function Anime() {
     const { id } = useParams();
@@ -14,6 +15,8 @@ export default function Anime() {
     const libraryItem = library.find(item => item.media_id === mediaId);
 
     const [epProgress, setEpProgress] = useState(0);
+    const [showPlayer, setShowPlayer] = useState(false);
+    const [selectedEpisode, setSelectedEpisode] = useState(1);
 
     useEffect(() => {
         if (libraryItem) {
@@ -83,29 +86,52 @@ export default function Anime() {
                         />
                         <div className="mt-6 flex flex-col gap-3 max-w-xs mx-auto md:mx-0 md:max-w-64">
                             {!isAdded ? (
-                                <div className="grid grid-cols-1 gap-2">
+                                <>
                                     <button
-                                        onClick={() => handleSync({ status: 'WATCHING' })}
-                                        disabled={isUpdating}
-                                        className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                                        onClick={() => {
+                                            setSelectedEpisode(epProgress > 0 ? epProgress : 1);
+                                            setShowPlayer(true);
+                                            handleSync({ status: 'WATCHING' });
+                                        }}
+                                        className="flex items-center justify-center gap-2 w-full py-4 bg-white text-black font-black uppercase tracking-tighter rounded-lg hover:scale-105 transition-transform shadow-xl"
                                     >
-                                        <MonitorPlay className="w-5 h-5" />
-                                        Start Watching
+                                        <Play className="w-5 h-5 fill-current" />
+                                        Watch Now
                                     </button>
-                                    <button
-                                        onClick={() => handleSync({ status: 'PLAN_TO_WATCH' })}
-                                        disabled={isUpdating}
-                                        className="flex items-center justify-center gap-2 w-full py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold rounded-lg transition-colors border border-white/5 disabled:opacity-50 text-sm"
-                                    >
-                                        <Clock className="w-4 h-4" />
-                                        Plan to Watch
-                                    </button>
-                                </div>
+                                    <div className="grid grid-cols-2 gap-2 mt-2">
+                                        <button
+                                            onClick={() => handleSync({ status: 'WATCHING' })}
+                                            disabled={isUpdating}
+                                            className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 font-bold rounded-lg transition-colors border border-purple-500/20 disabled:opacity-50"
+                                        >
+                                            <MonitorPlay className="w-4 h-4" />
+                                            Start Tracking
+                                        </button>
+                                        <button
+                                            onClick={() => handleSync({ status: 'PLAN_TO_WATCH' })}
+                                            disabled={isUpdating}
+                                            className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold rounded-lg transition-colors border border-white/5 disabled:opacity-50"
+                                        >
+                                            <Clock className="w-4 h-4" />
+                                            Planning
+                                        </button>
+                                    </div>
+                                </>
                             ) : (
                                 <div className="space-y-3">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedEpisode(epProgress > 0 ? epProgress : 1);
+                                            setShowPlayer(true);
+                                        }}
+                                        className="flex items-center justify-center gap-2 w-full py-3 bg-white text-black font-black uppercase tracking-tighter rounded-lg hover:scale-105 transition-transform shadow-xl mb-4"
+                                    >
+                                        <Play className="w-5 h-5 fill-current" />
+                                        Watch Now
+                                    </button>
                                     <div className="p-4 bg-purple-600/10 border border-purple-500/20 rounded-xl">
                                         <div className="text-xs text-purple-400 uppercase font-black tracking-widest mb-1">Status</div>
-                                        <div className="text-lg font-bold text-white capitalize">{libraryItem.status.toLowerCase().replace('_', ' ')}</div>
+                                        <div className="text-lg font-bold text-white capitalize">{libraryItem?.status.toLowerCase().replace('_', ' ')}</div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-2">
@@ -119,11 +145,11 @@ export default function Anime() {
                                             <button
                                                 key={s.id}
                                                 onClick={() => handleSync({ status: s.id as any, progress_episode: s.id === 'FINISHED' ? data.episodes : undefined })}
-                                                disabled={isUpdating || libraryItem.status === s.id}
+                                                disabled={isUpdating || libraryItem?.status === s.id}
                                                 className={clsx(
                                                     "flex items-center justify-center gap-2 p-3 rounded-lg border transition-all",
                                                     s.full && "col-span-2",
-                                                    libraryItem.status === s.id
+                                                    libraryItem?.status === s.id
                                                         ? "bg-purple-600 border-purple-400 text-white"
                                                         : "bg-neutral-900 border-white/5 text-neutral-400 hover:bg-neutral-800"
                                                 )}
@@ -182,34 +208,74 @@ export default function Anime() {
 
 
                         <div className="bg-neutral-800/50 rounded-xl p-6 mb-8 border border-white/5">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                <MonitorPlay className="w-5 h-5 text-purple-400" />
-                                Watching Progress
-                            </h3>
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-bold flex items-center gap-2">
+                                    <MonitorPlay className="w-5 h-5 text-purple-400" />
+                                    Episodes
+                                </h3>
+                                <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest">
+                                    {data.episodes || '?'} Total
+                                </div>
+                            </div>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <div className="flex justify-between text-sm mb-2 text-neutral-300">
-                                        <span>Episode Progress</span>
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                type="number"
-                                                value={epProgress}
-                                                onChange={(e) => {
-                                                    const val = Math.min(parseInt(e.target.value) || 0, data.episodes || 999);
-                                                    setEpProgress(val);
-                                                    handleSync({ progress_episode: val });
-                                                }}
-                                                className="w-16 bg-black/40 border border-white/10 rounded px-2 py-0.5 text-center text-purple-400 font-bold focus:outline-none focus:border-purple-500"
-                                            />
-                                            <span className="font-mono opacity-50">/ {data.episodes || '?'}</span>
+                            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                {Array.from({ length: data.episodes || 0 }).map((_, i) => {
+                                    const epNum = i + 1;
+                                    const isWatched = epNum <= epProgress;
+                                    const isCurrent = epNum === epProgress + 1;
+
+                                    return (
+                                        <button
+                                            key={epNum}
+                                            onClick={() => {
+                                                setSelectedEpisode(epNum);
+                                                setShowPlayer(true);
+                                                // Auto update progress if they watch ahead
+                                                if (epNum > epProgress) {
+                                                    setEpProgress(epNum);
+                                                    handleSync({ progress_episode: epNum });
+                                                }
+                                            }}
+                                            className={clsx(
+                                                "aspect-square flex items-center justify-center rounded-lg text-sm font-bold transition-all border",
+                                                isWatched
+                                                    ? "bg-purple-600/20 border-purple-500/30 text-purple-400"
+                                                    : isCurrent
+                                                        ? "bg-white text-black border-white shadow-lg scale-105"
+                                                        : "bg-neutral-900 border-white/5 text-neutral-500 hover:border-white/20 hover:text-white"
+                                            )}
+                                        >
+                                            {epNum}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="mt-8 border-t border-white/5 pt-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <div className="flex justify-between text-sm mb-2 text-neutral-300">
+                                            <span>Manual Progress Override</span>
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="number"
+                                                    value={epProgress}
+                                                    onChange={(e) => {
+                                                        const val = Math.min(parseInt(e.target.value) || 0, data.episodes || 999);
+                                                        setEpProgress(val);
+                                                        handleSync({ progress_episode: val });
+                                                    }}
+                                                    className="w-16 bg-black/40 border border-white/10 rounded px-2 py-0.5 text-center text-purple-400 font-bold focus:outline-none focus:border-purple-500"
+                                                />
+                                                <span className="font-mono opacity-50">/ {data.episodes || '?'}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="h-2 bg-neutral-700 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-purple-500 transition-all duration-300"
-                                            style={{ width: `${data.episodes ? (epProgress / data.episodes) * 100 : 0}%` }}
-                                        />
+                                        <div className="h-2 bg-neutral-700 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-purple-500 transition-all duration-300"
+                                                style={{ width: `${data.episodes ? (epProgress / data.episodes) * 100 : 0}%` }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -281,6 +347,17 @@ export default function Anime() {
 
                 </div>
             </div>
-        </div>
+
+            {
+                showPlayer && mediaId && (
+                    <PlayerModal
+                        anilistId={mediaId}
+                        episode={selectedEpisode}
+                        onClose={() => setShowPlayer(false)}
+                        title={data.title.english || data.title.romaji}
+                    />
+                )
+            }
+        </div >
     );
 }
