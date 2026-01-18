@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import Browse from './pages/Browse';
 import Manga from './pages/Manga';
 import Anime from './pages/Anime';
 import Search from './pages/Search';
@@ -15,6 +16,7 @@ function App() {
     <AppLayout>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/browse" element={<Browse />} />
         <Route path="/search" element={<Search />} />
         <Route
           path="/library"

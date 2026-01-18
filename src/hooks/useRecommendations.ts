@@ -28,6 +28,7 @@ query($genres: [String], $type: MediaType, $country: CountryCode) {
 
 function getFilterParams(format: ContentFormat) {
     switch (format) {
+        case 'UNIFIED': return {};
         case 'ANIME': return { type: 'ANIME' as const };
         case 'MANGA': return { type: 'MANGA' as const, country: 'JP' as const };
         case 'MANHWA': return { type: 'MANGA' as const, country: 'KR' as const };
@@ -45,6 +46,7 @@ export function useRecommendations(format: ContentFormat = 'ANIME') {
         queryFn: async () => {
             // 1. Filter library by the EXACT format
             const itemsOfFormat = library.filter(item => {
+                if (format === 'UNIFIED') return true;
                 if (format === 'ANIME') return item.media_type === 'ANIME';
                 if (format === 'MANGA') return item.media_type === 'MANGA';
                 if (format === 'MANHWA') return item.media_type === 'MANHWA';
@@ -108,6 +110,7 @@ export function useRecommendations(format: ContentFormat = 'ANIME') {
                 if (libraryIds.has(m.id)) return false;
 
                 // Ensure the recommendation matches the format
+                if (format === 'UNIFIED') return true;
                 if (format === 'ANIME') return m.type === 'ANIME';
                 if (format === 'MANGA') return m.type === 'MANGA' && m.countryOfOrigin === 'JP';
                 if (format === 'MANHWA') return m.type === 'MANGA' && m.countryOfOrigin === 'KR';

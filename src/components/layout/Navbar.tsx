@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Library, Home, User } from 'lucide-react';
+import { Search, Library, Home, User, Compass } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../../context/AuthContext';
 
@@ -9,6 +9,7 @@ export function Navbar() {
 
     const navItems = [
         { label: 'Home', path: '/', icon: Home },
+        { label: 'Browse', path: '/browse', icon: Compass },
         { label: 'Library', path: '/library', icon: Library },
     ];
 

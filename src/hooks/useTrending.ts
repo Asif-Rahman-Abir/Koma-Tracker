@@ -80,7 +80,7 @@ query($type: MediaType, $country: CountryCode) {
 }
 `;
 
-export type ContentFormat = 'ANIME' | 'MANGA' | 'MANHWA' | 'MANHUA';
+export type ContentFormat = 'ANIME' | 'MANGA' | 'MANHWA' | 'MANHUA' | 'UNIFIED';
 
 interface FilterState {
   type: 'ANIME' | 'MANGA';
@@ -89,6 +89,7 @@ interface FilterState {
 
 function getFilterVars(format: ContentFormat): FilterState {
   switch (format) {
+    case 'UNIFIED': return { type: undefined as any };
     case 'ANIME': return { type: 'ANIME' };
     case 'MANGA': return { type: 'MANGA', country: 'JP' };
     case 'MANHWA': return { type: 'MANGA', country: 'KR' };
