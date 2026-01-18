@@ -56,9 +56,9 @@ export function Navbar() {
 
                     {/* Search / Profile */}
                     <div className="flex items-center gap-4">
-                        <button className="rounded-full p-2 text-neutral-400 transition-colors hover:bg-white/10 hover:text-white">
+                        <Link to="/search" className="rounded-full p-2 text-neutral-400 transition-colors hover:bg-white/10 hover:text-white">
                             <Search className="h-5 w-5" />
-                        </button>
+                        </Link>
 
                         {user ? (
                             <Link to="/profile" className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 overflow-hidden border border-white/20 hover:opacity-80 transition-opacity flex items-center justify-center">
