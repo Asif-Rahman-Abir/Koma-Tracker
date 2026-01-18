@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Library, Home } from 'lucide-react';
+import { Search, Library, Home, User } from 'lucide-react';
 import clsx from 'clsx';
+import { useAuth } from '../../context/AuthContext';
 
 export function Navbar() {
     const location = useLocation();
+    const { user } = useAuth();
 
     const navItems = [
         { label: 'Home', path: '/', icon: Home },
@@ -52,12 +54,22 @@ export function Navbar() {
                         </div>
                     </div>
 
-                    {/* Search / Profile Placeholder */}
+                    {/* Search / Profile */}
                     <div className="flex items-center gap-4">
                         <button className="rounded-full p-2 text-neutral-400 transition-colors hover:bg-white/10 hover:text-white">
                             <Search className="h-5 w-5" />
                         </button>
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 animate-pulse" />
+
+                        {user ? (
+                            <Link to="/profile" className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 overflow-hidden border border-white/20 hover:opacity-80 transition-opacity flex items-center justify-center">
+                                <span className="text-sm font-bold text-white">{user.email?.[0].toUpperCase()}</span>
+                            </Link>
+                        ) : (
+                            <Link to="/login" className="flex items-center gap-2 px-4 py-1.5 text-sm font-bold text-white bg-white/10 rounded-full hover:bg-white/20 transition-all border border-white/5">
+                                <User className="w-4 h-4" />
+                                Sign In
+                            </Link>
+                        )}
                     </div>
 
                 </div>
