@@ -10,10 +10,10 @@ interface PlayerModalProps {
 }
 
 const SERVERS = [
-    { id: 'vidplus', name: 'VidPlus (Default)', url: (id: number, _mal: number | undefined, ep: number) => `https://player.vidplus.to/embed/anime/${id}/${ep}?dub=false&autoplay=true` },
-    { id: 'anilistplayer', name: 'AnilistPlayer', url: (id: number, _mal: number | undefined, ep: number) => `https://anilistplayer.com/player/index.php?id=${id}&ep=${ep}` },
-    { id: 'vidsrc', name: 'VidSrc', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.to/embed/anime/${id}/${ep}` },
-    { id: 'vidsrcmal', name: 'VidSrc (MAL Source)', url: (id: number, mal: number | undefined, ep: number) => mal ? `https://vidsrc.to/embed/anime/mal/${mal}/${ep}` : `https://vidsrc.to/embed/anime/${id}/${ep}` },
+    { id: 'vidlink', name: 'VidLink (Reliable)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidlink.pro/embed/anime/${id}/${ep}` },
+    { id: 'vidsrc_to', name: 'VidSrc (Fast)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.to/embed/anime/${id}/${ep}` },
+    { id: 'anilistplayer', name: 'AniPlayer (Gogo)', url: (id: number, _mal: number | undefined, ep: number) => `https://anilistplayer.com/player/index.php?id=${id}&ep=${ep}` },
+    { id: 'vidsrc_xyz', name: 'VidSrc (Secondary)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.xyz/embed/anime/${id}/${ep}` },
 ];
 
 export function PlayerModal({ anilistId, idMal, episode, onClose, title }: PlayerModalProps) {
@@ -97,21 +97,32 @@ export function PlayerModal({ anilistId, idMal, episode, onClose, title }: Playe
                 </div>
 
                 {/* Footer / External Fallback */}
-                <div className="p-3 bg-neutral-900/50 border-t border-white/5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 text-neutral-500 hidden md:flex">
+                <div className="p-3 bg-neutral-900/50 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 text-neutral-500">
                         <Search className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Still can't find it?</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Can't find it here?</span>
                     </div>
 
-                    <a
-                        href={googleSearchUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-2 px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded text-[10px] font-bold text-neutral-300 transition-colors pointer-events-auto border border-white/5"
-                    >
-                        <ExternalLink className="w-3 h-3" />
-                        Search External Sources
-                    </a>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href={`https://gogoanime3.co/search.html?keyword=${encodeURIComponent(title || '')}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-2 px-4 py-1.5 bg-purple-600/10 hover:bg-purple-600/20 rounded text-[10px] font-black text-purple-400 transition-colors border border-purple-500/10 uppercase tracking-widest"
+                        >
+                            <ExternalLink className="w-3 h-3" />
+                            GogoAnime (anipy-api Source)
+                        </a>
+                        <a
+                            href={googleSearchUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-2 px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded text-[10px] font-bold text-neutral-300 transition-colors border border-white/5"
+                        >
+                            <ExternalLink className="w-3 h-3" />
+                            Google
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
