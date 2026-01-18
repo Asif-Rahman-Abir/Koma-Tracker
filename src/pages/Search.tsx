@@ -27,6 +27,13 @@ export default function Search() {
 
     const { data, isLoading, isError } = useSearch(debouncedQuery);
 
+    const hasResults = data && (
+        data.anime.length > 0 ||
+        data.manga.length > 0 ||
+        data.manhwa.length > 0 ||
+        data.manhua.length > 0
+    );
+
     return (
         <div className="min-h-[80vh] px-4 py-8">
             {/* Search Header */}
@@ -45,28 +52,99 @@ export default function Search() {
             </div>
 
             {/* Results Grid */}
-            <div className="mx-auto max-w-7xl">
+            <div className="mx-auto max-w-7xl space-y-16">
                 {isLoading ? (
                     <div className="flex h-40 items-center justify-center">
                         <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
                     </div>
                 ) : isError ? (
                     <div className="text-center text-red-500">Error searching content. Please try again.</div>
-                ) : data && data.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                        {data.map((item: any) => (
-                            <Card
-                                key={item.id}
-                                id={item.id}
-                                type={item.type.toLowerCase()}
-                                country={item.countryOfOrigin}
-                                title={item.title.english || item.title.romaji}
-                                image={item.coverImage.large}
-                                rating={item.averageScore}
-                                rank={item.rankings?.[0]?.rank}
-                            />
-                        ))}
-                    </div>
+                ) : hasResults ? (
+                    <>
+                        {/* Anime Section */}
+                        {data.anime.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-purple-500">Anime</h2>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                                    {data.anime.map((item: any) => (
+                                        <Card
+                                            key={item.id}
+                                            id={item.id}
+                                            type={item.type.toLowerCase()}
+                                            country={item.countryOfOrigin}
+                                            title={item.title.english || item.title.romaji}
+                                            image={item.coverImage.large}
+                                            rating={item.averageScore}
+                                            rank={item.rankings?.[0]?.rank}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Manga Section */}
+                        {data.manga.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-blue-500">Manga</h2>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                                    {data.manga.map((item: any) => (
+                                        <Card
+                                            key={item.id}
+                                            id={item.id}
+                                            type={item.type.toLowerCase()}
+                                            country={item.countryOfOrigin}
+                                            title={item.title.english || item.title.romaji}
+                                            image={item.coverImage.large}
+                                            rating={item.averageScore}
+                                            rank={item.rankings?.[0]?.rank}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Manhwa Section */}
+                        {data.manhwa.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-green-500">Manhwa</h2>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                                    {data.manhwa.map((item: any) => (
+                                        <Card
+                                            key={item.id}
+                                            id={item.id}
+                                            type={item.type.toLowerCase()}
+                                            country={item.countryOfOrigin}
+                                            title={item.title.english || item.title.romaji}
+                                            image={item.coverImage.large}
+                                            rating={item.averageScore}
+                                            rank={item.rankings?.[0]?.rank}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Manhua Section */}
+                        {data.manhua.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-white mb-6 pl-2 border-l-4 border-yellow-500">Manhua</h2>
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                                    {data.manhua.map((item: any) => (
+                                        <Card
+                                            key={item.id}
+                                            id={item.id}
+                                            type={item.type.toLowerCase()}
+                                            country={item.countryOfOrigin}
+                                            title={item.title.english || item.title.romaji}
+                                            image={item.coverImage.large}
+                                            rating={item.averageScore}
+                                            rank={item.rankings?.[0]?.rank}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                    </>
                 ) : debouncedQuery ? (
                     <div className="text-center text-neutral-500 mt-12">
                         No results found for "{debouncedQuery}"
