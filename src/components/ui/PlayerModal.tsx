@@ -10,9 +10,10 @@ interface PlayerModalProps {
 }
 
 const SERVERS = [
-    { id: 'vidlink', name: 'VidLink (Reliable)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidlink.pro/embed/anime/${id}/${ep}` },
-    { id: 'vidsrc_to', name: 'VidSrc (Fast)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.to/embed/anime/${id}/${ep}` },
+    { id: 'vidlink_mal', name: 'VidLink (MAL-based)', url: (_id: number, mal: number | undefined, ep: number) => mal ? `https://vidlink.pro/anime/${mal}/${ep}` : `https://vidlink.pro/embed/anime/${_id}/${ep}` },
+    { id: 'vidsrc_me', name: 'VidSrc.me (Pro)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.me/embed/anime?anilist=${id}&episode=${ep}` },
     { id: 'anilistplayer', name: 'AniPlayer (Gogo)', url: (id: number, _mal: number | undefined, ep: number) => `https://anilistplayer.com/player/index.php?id=${id}&ep=${ep}` },
+    { id: 'vidsrc_to', name: 'VidSrc.to (Fast)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.to/embed/anime/${id}/${ep}` },
     { id: 'vidsrc_xyz', name: 'VidSrc (Secondary)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.xyz/embed/anime/${id}/${ep}` },
 ];
 
