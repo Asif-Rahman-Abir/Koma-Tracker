@@ -352,6 +352,7 @@ export default function Anime() {
                 showPlayer && mediaId && (
                     <PlayerModal
                         anilistId={mediaId}
+                        idMal={data.idMal}
                         episode={selectedEpisode}
                         onClose={() => setShowPlayer(false)}
                         title={data.title.english || data.title.romaji}
