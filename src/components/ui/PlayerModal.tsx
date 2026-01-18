@@ -10,11 +10,11 @@ interface PlayerModalProps {
 }
 
 const SERVERS = [
+    { id: 'vidsrc_me', name: 'VidSrc (Pro - Animepahe)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.me/embed/anime?anilist=${id}&episode=${ep}` },
     { id: 'vidlink_mal', name: 'VidLink (MAL-based)', url: (_id: number, mal: number | undefined, ep: number) => mal ? `https://vidlink.pro/anime/${mal}/${ep}` : `https://vidlink.pro/embed/anime/${_id}/${ep}` },
-    { id: 'vidsrc_me', name: 'VidSrc.me (Pro)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.me/embed/anime?anilist=${id}&episode=${ep}` },
-    { id: 'anilistplayer', name: 'AniPlayer (Gogo)', url: (id: number, _mal: number | undefined, ep: number) => `https://anilistplayer.com/player/index.php?id=${id}&ep=${ep}` },
-    { id: 'vidsrc_to', name: 'VidSrc.to (Fast)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.to/embed/anime/${id}/${ep}` },
-    { id: 'vidsrc_xyz', name: 'VidSrc (Secondary)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.xyz/embed/anime/${id}/${ep}` },
+    { id: 'anilistplayer', name: 'AniPlayer (Multi)', url: (id: number, _mal: number | undefined, ep: number) => `https://anilistplayer.com/player/index.php?id=${id}&ep=${ep}` },
+    { id: 'vidsrc_pro', name: 'HiAnime (Premium)', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.pro/embed/anime/${id}/${ep}` },
+    { id: 'vidsrc_cc', name: 'VidSrc.cc', url: (id: number, _mal: number | undefined, ep: number) => `https://vidsrc.cc/v2/embed/anime/${id}/${ep}` },
 ];
 
 export function PlayerModal({ anilistId, idMal, episode, onClose, title }: PlayerModalProps) {
@@ -106,13 +106,22 @@ export function PlayerModal({ anilistId, idMal, episode, onClose, title }: Playe
 
                     <div className="flex items-center gap-2">
                         <a
+                            href={`https://animepahe.ru/search?q=${encodeURIComponent(title || '')}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-2 px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded text-[10px] font-bold text-neutral-300 transition-colors border border-white/5"
+                        >
+                            <ExternalLink className="w-3 h-3" />
+                            Animepahe
+                        </a>
+                        <a
                             href={`https://gogoanime3.co/search.html?keyword=${encodeURIComponent(title || '')}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 px-4 py-1.5 bg-purple-600/10 hover:bg-purple-600/20 rounded text-[10px] font-black text-purple-400 transition-colors border border-purple-500/10 uppercase tracking-widest"
+                            className="flex items-center gap-2 px-4 py-1.5 bg-neutral-800 hover:bg-neutral-700 rounded text-[10px] font-bold text-neutral-300 transition-colors border border-white/5"
                         >
                             <ExternalLink className="w-3 h-3" />
-                            GogoAnime (anipy-api Source)
+                            GogoAnime
                         </a>
                         <a
                             href={googleSearchUrl}
