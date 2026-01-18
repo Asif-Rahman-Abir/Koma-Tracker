@@ -65,7 +65,7 @@ export default function Home() {
                             <h2 className="text-2xl font-bold text-white">Popular {TABS.find(t => t.value === activeTab)?.label}</h2>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 mb-12">
                             {data.popular.map((item: any) => (
                                 <Card
                                     key={item.id}
@@ -75,6 +75,46 @@ export default function Home() {
                                     image={item.coverImage.large}
                                     rating={item.averageScore}
                                     rank={item.rankings?.[0]?.rank}
+                                />
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Top Rated Section */}
+                    <section>
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="text-2xl font-bold text-white">Top Rated</h2>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 mb-12">
+                            {data.topRated.map((item: any) => (
+                                <Card
+                                    key={item.id}
+                                    id={item.id}
+                                    type={item.type.toLowerCase()}
+                                    title={item.title.english || item.title.romaji}
+                                    image={item.coverImage.large}
+                                    rating={item.averageScore}
+                                />
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* Favourites Section */}
+                    <section>
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="text-2xl font-bold text-white">All Time Favorites</h2>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                            {data.favourites.map((item: any) => (
+                                <Card
+                                    key={item.id}
+                                    id={item.id}
+                                    type={item.type.toLowerCase()}
+                                    title={item.title.english || item.title.romaji}
+                                    image={item.coverImage.large}
+                                    rating={item.averageScore}
                                 />
                             ))}
                         </div>

@@ -19,8 +19,44 @@ query($type: MediaType, $country: CountryCode) {
       averageScore
     }
   }
-  popular: Page(page: 1, perPage: 12) {
+  popular: Page(page: 1, perPage: 6) {
     media(sort: POPULARITY_DESC, type: $type, countryOfOrigin: $country) {
+      id
+      type
+      title {
+        romaji
+        english
+      }
+      coverImage {
+        large
+      }
+      averageScore
+      rankings {
+        rank
+        type
+      }
+    }
+  }
+  topRated: Page(page: 1, perPage: 6) {
+    media(sort: SCORE_DESC, type: $type, countryOfOrigin: $country) {
+      id
+      type
+      title {
+        romaji
+        english
+      }
+      coverImage {
+        large
+      }
+      averageScore
+      rankings {
+        rank
+        type
+      }
+    }
+  }
+  favourites: Page(page: 1, perPage: 6) {
+    media(sort: FAVOURITES_DESC, type: $type, countryOfOrigin: $country) {
       id
       type
       title {
@@ -67,6 +103,8 @@ export function useTrending(format: ContentFormat) {
       return {
         hero: data.trending.media[0],
         popular: data.popular.media,
+        topRated: data.topRated.media,
+        favourites: data.favourites.media,
       };
     },
   });
