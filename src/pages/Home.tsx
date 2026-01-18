@@ -15,7 +15,7 @@ const TABS: { label: string; value: ContentFormat }[] = [
 export default function Home() {
     const [activeTab, setActiveTab] = useState<ContentFormat>('ANIME');
     const { data, isLoading: isTrendingLoading, error } = useTrending(activeTab);
-    const { data: recs, isLoading: isRecsLoading } = useRecommendations(activeTab === 'ANIME' ? 'ANIME' : 'MANGA');
+    const { data: recs, isLoading: isRecsLoading } = useRecommendations(activeTab);
 
     const isLoading = isTrendingLoading || isRecsLoading;
 
