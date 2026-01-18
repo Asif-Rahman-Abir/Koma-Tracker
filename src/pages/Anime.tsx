@@ -1,12 +1,26 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
-import { CheckCircle, PlusCircle, MonitorPlay, Star } from 'lucide-react';
+import { useLibrary } from '../hooks/useLibrary';
+import { CheckCircle, PlusCircle, MonitorPlay, Star, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Anime() {
     const { id } = useParams();
-    const { data, isLoading, error } = useSeries(id);
+    const { data, isLoading: isSeriesLoading, error } = useSeries(id);
+    const { library, upsert, remove, isUpdating } = useLibrary();
 
-    if (isLoading) {
+    const mediaId = id ? parseInt(id) : null;
+    const libraryItem = library.find(item => item.media_id === mediaId);
+
+    const [epProgress, setEpProgress] = useState(0);
+
+    useEffect(() => {
+        if (libraryItem) {
+            setEpProgress(libraryItem.progress_episode || 0);
+        }
+    }, [libraryItem]);
+
+    if (isSeriesLoading) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
@@ -21,6 +35,21 @@ export default function Anime() {
             </div>
         );
     }
+
+    const handleSync = async (updates: any) => {
+        if (!mediaId) return;
+        await upsert({
+            media_id: mediaId,
+            media_type: 'ANIME',
+            title: data.title.english || data.title.romaji,
+            cover_image: data.coverImage.large,
+            total_episodes: data.episodes,
+            status: updates.status || libraryItem?.status || 'READING',
+            progress_episode: updates.progress_episode ?? epProgress,
+        });
+    };
+
+    const isAdded = !!libraryItem;
 
     return (
         <div className="-mt-20">
@@ -43,11 +72,30 @@ export default function Anime() {
                             className="w-48 md:w-64 rounded-xl shadow-2xl ring-4 ring-black/50 mx-auto md:mx-0"
                         />
                         <div className="mt-6 flex flex-col gap-3 max-w-xs mx-auto md:mx-0 md:max-w-64">
-                            <button className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors">
-                                <PlusCircle className="w-5 h-5" />
-                                Add to Library
-                            </button>
-                            <button className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-semibold rounded-lg transition-colors">
+                            {!isAdded ? (
+                                <button
+                                    onClick={() => handleSync({ status: 'PLAN_TO_READ' })}
+                                    disabled={isUpdating}
+                                    className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                    <PlusCircle className="w-5 h-5" />
+                                    Add to Library
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => remove(mediaId!)}
+                                    disabled={isUpdating}
+                                    className="flex items-center justify-center gap-2 w-full py-3 bg-red-900/50 hover:bg-red-800 text-red-200 font-bold rounded-lg transition-colors border border-red-500/20 disabled:opacity-50"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                    Remove from Library
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => handleSync({ status: 'COMPLETED', progress_episode: data.episodes })}
+                                className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-semibold rounded-lg transition-colors"
+                            >
                                 <CheckCircle className="w-5 h-5" />
                                 Mark as Watched
                             </button>
@@ -97,12 +145,27 @@ export default function Anime() {
 
                             <div className="space-y-4">
                                 <div>
-                                    <div className="flex justify-between text-sm mb-1 text-neutral-300">
+                                    <div className="flex justify-between text-sm mb-2 text-neutral-300">
                                         <span>Episode Progress</span>
-                                        <span className="font-mono">0 / {data.episodes || '?'}</span>
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                type="number"
+                                                value={epProgress}
+                                                onChange={(e) => {
+                                                    const val = Math.min(parseInt(e.target.value) || 0, data.episodes || 999);
+                                                    setEpProgress(val);
+                                                    handleSync({ progress_episode: val });
+                                                }}
+                                                className="w-16 bg-black/40 border border-white/10 rounded px-2 py-0.5 text-center text-purple-400 font-bold focus:outline-none focus:border-purple-500"
+                                            />
+                                            <span className="font-mono opacity-50">/ {data.episodes || '?'}</span>
+                                        </div>
                                     </div>
                                     <div className="h-2 bg-neutral-700 rounded-full overflow-hidden">
-                                        <div className="h-full bg-purple-500 w-0" />
+                                        <div
+                                            className="h-full bg-purple-500 transition-all duration-300"
+                                            style={{ width: `${data.episodes ? (epProgress / data.episodes) * 100 : 0}%` }}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -119,11 +182,7 @@ export default function Anime() {
                                 <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Related Content</h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {data.relations.edges.map((edge: any) => (
-                                        <Link
-                                            key={edge.node.id}
-                                            to={`/${edge.node.type.toLowerCase()}/${edge.node.id}`}
-                                            className="group cursor-pointer"
-                                        >
+                                        <div key={edge.node.id} className="group cursor-pointer">
                                             <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2">
                                                 <img
                                                     src={edge.node.coverImage.medium}
@@ -136,7 +195,7 @@ export default function Anime() {
                                             </div>
                                             <div className="text-xs text-purple-400 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
                                             <div className="line-clamp-2 text-sm font-medium text-neutral-200 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
-                                        </Link>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

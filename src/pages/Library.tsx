@@ -1,54 +1,30 @@
 import { useState } from 'react';
 import { Card } from '../components/ui/Card';
+import { useLibrary } from '../hooks/useLibrary';
 import clsx from 'clsx';
-import { BookOpen, CheckCircle, Clock } from 'lucide-react';
+import { BookOpen, CheckCircle, Clock, Loader2 } from 'lucide-react';
 
 type LibraryStatus = 'READING' | 'COMPLETED' | 'PLAN_TO_READ';
 
-// Mock Data for now
-const MOCK_LIBRARY = [
-    {
-        id: 1,
-        title: { userPreferred: 'Solo Leveling' },
-        coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx105398-b673VN5ZJLk8.jpg' },
-        type: 'MANHWA',
-        status: 'READING',
-        progress: 150,
-        total: 179,
-        format: 'MANHWA'
-    },
-    {
-        id: 2,
-        title: { userPreferred: 'One Piece' },
-        coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx30013-o07E8iP2qg5N.jpg' },
-        type: 'MANGA',
-        status: 'READING',
-        progress: 1050,
-        total: null,
-        format: 'MANGA'
-    },
-    {
-        id: 3,
-        title: { userPreferred: 'Jujutsu Kaisen' },
-        coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-bbBWj4pEfseh.jpg' },
-        type: 'ANIME',
-        status: 'COMPLETED',
-        progress: 24,
-        total: 24,
-        format: 'TV'
-    },
-];
-
 export default function Library() {
     const [activeStatus, setActiveStatus] = useState<LibraryStatus>('READING');
+    const { library, isLoading } = useLibrary();
 
-    const filteredItems = MOCK_LIBRARY.filter(item => item.status === activeStatus);
+    const filteredItems = library.filter(item => item.status === activeStatus);
 
     const tabs: { id: LibraryStatus; label: string; icon: any }[] = [
         { id: 'READING', label: 'Reading / Watching', icon: Clock },
         { id: 'COMPLETED', label: 'Completed', icon: CheckCircle },
         { id: 'PLAN_TO_READ', label: 'Plan to Read', icon: BookOpen },
     ];
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[80vh] items-center justify-center">
+                <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen px-4 py-8">
@@ -82,12 +58,12 @@ export default function Library() {
                     {filteredItems.map((item) => (
                         <Card
                             key={item.id}
-                            id={item.id}
-                            type={item.type.toLowerCase()}
-                            image={item.coverImage.large}
-                            title={item.title.userPreferred}
-                            rating={85} // Mock score
-                            country={item.format === 'MANHWA' ? 'KR' : item.format === 'MANHUA' ? 'CN' : 'JP'} // Mock country
+                            id={item.media_id}
+                            type={item.media_type.toLowerCase()}
+                            image={item.cover_image}
+                            title={item.title}
+                            rating={0} // We don't store score in lib usually, or wait for API
+                            country={item.media_type === 'MANHWA' ? 'KR' : item.media_type === 'MANHUA' ? 'CN' : 'JP'}
                         />
                     ))}
                 </div>

@@ -1,14 +1,16 @@
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { LogOut, Settings, BarChart } from 'lucide-react';
+import { useLibrary } from '../hooks/useLibrary';
+import { Navigate, Link } from 'react-router-dom';
+import { LogOut, BarChart, Loader2 } from 'lucide-react';
 
 export default function Profile() {
-    const { user, signOut, isLoading } = useAuth();
+    const { user, signOut, isLoading: isAuthLoading } = useAuth();
+    const { library, isLoading: isLibLoading } = useLibrary();
 
-    if (isLoading) {
+    if (isAuthLoading) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+                <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
             </div>
         );
     }
@@ -16,6 +18,17 @@ export default function Profile() {
     if (!user) {
         return <Navigate to="/login" />;
     }
+
+    // Stats Calculations
+    const totalMedia = library.length;
+    const completed = library.filter(i => i.status === 'COMPLETED').length;
+    const totalChapters = library.reduce((acc, curr) => acc + (curr.progress_chapter || 0), 0);
+    const totalEpisodes = library.reduce((acc, curr) => acc + (curr.progress_episode || 0), 0);
+
+    // Sort by updated_at for recent activity
+    const recentActivity = [...library]
+        .sort((a, b) => new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime())
+        .slice(0, 5);
 
     return (
         <div className="-mt-20">
@@ -35,9 +48,6 @@ export default function Profile() {
                                 {user.email?.[0].toUpperCase()}
                             </span>
                         </div>
-                        <button className="absolute bottom-2 right-2 p-2 bg-neutral-900 rounded-full border border-white/10 hover:bg-neutral-800 transition-colors">
-                            <Settings className="w-5 h-5 text-white" />
-                        </button>
                     </div>
 
                     {/* User Info */}
@@ -61,10 +71,10 @@ export default function Profile() {
                 {/* Stats Grid */}
                 <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { label: 'Total Read', value: '0', color: 'text-purple-400' },
-                        { label: 'Chapters', value: '0', color: 'text-blue-400' },
-                        { label: 'Mean Score', value: '-', color: 'text-yellow-400' },
-                        { label: 'Days Read', value: '0.0', color: 'text-green-400' }
+                        { label: 'Total Media', value: totalMedia, color: 'text-purple-400' },
+                        { label: 'Completed', value: completed, color: 'text-green-400' },
+                        { label: 'Chapters Read', value: totalChapters, color: 'text-blue-400' },
+                        { label: 'Episodes Watched', value: totalEpisodes, color: 'text-yellow-400' }
                     ].map((stat) => (
                         <div key={stat.label} className="bg-neutral-900/50 border border-white/5 rounded-xl p-6 backdrop-blur-sm">
                             <div className="text-sm text-neutral-400 mb-1">{stat.label}</div>
@@ -73,14 +83,38 @@ export default function Profile() {
                     ))}
                 </div>
 
-                {/* Recent Activity Placeholder */}
+                {/* Recent Activity */}
                 <h2 className="mt-16 text-xl font-bold text-white mb-6 flex items-center gap-2">
                     <BarChart className="w-5 h-5" />
-                    Recent Activity
+                    Recent Updates
                 </h2>
-                <div className="bg-neutral-900/30 border border-white/5 rounded-xl p-12 text-center text-neutral-500">
-                    No recent activity to show.
-                </div>
+
+                {recentActivity.length > 0 ? (
+                    <div className="grid gap-3">
+                        {recentActivity.map((item) => (
+                            <Link
+                                to={`/${item.media_type.toLowerCase()}/${item.media_id}`}
+                                key={item.media_id}
+                                className="flex items-center gap-4 bg-neutral-900/30 border border-white/5 rounded-xl p-4 hover:bg-white/5 transition-colors group"
+                            >
+                                <img src={item.cover_image} className="w-12 h-16 object-cover rounded-lg" alt="" />
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-white group-hover:text-purple-400 transition-colors">{item.title}</h3>
+                                    <div className="text-sm text-neutral-500">
+                                        Updated {item.progress_chapter || item.progress_episode} {item.media_type === 'ANIME' ? 'episodes' : 'chapters'}
+                                    </div>
+                                </div>
+                                <div className="text-xs text-neutral-600 font-mono">
+                                    {new Date(item.updated_at || 0).toLocaleDateString()}
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-neutral-900/30 border border-white/5 rounded-xl p-12 text-center text-neutral-500">
+                        {isLibLoading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : 'No recent activity to show.'}
+                    </div>
+                )}
 
             </div>
         </div>

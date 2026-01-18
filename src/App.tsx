@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import { AppLayout } from './components/layout/AppLayout';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 function App() {
   return (
@@ -15,12 +16,26 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/library" element={<Library />} />
+        <Route
+          path="/library"
+          element={
+            <ProtectedRoute>
+              <Library />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/manga/:id" element={<Manga />} />
         <Route path="/anime/:id" element={<Anime />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </AppLayout>
   );
