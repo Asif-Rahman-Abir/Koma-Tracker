@@ -52,7 +52,7 @@ export function Card({ id, title, image, type, country, rating, rank }: CardProp
                 </div>
             </div>
 
-            {rating && (
+            {!!rating && (
                 <div className="absolute top-2 right-2 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
                     <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
                     {rating}%

@@ -11,6 +11,7 @@ query($id: Int) {
       native
     }
     coverImage {
+      large
       extraLarge
     }
     bannerImage

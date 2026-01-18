@@ -44,7 +44,7 @@ export default function Manga() {
             media_id: mediaId,
             media_type: 'MANGA',
             title: data.title.english || data.title.romaji,
-            cover_image: data.coverImage.large,
+            cover_image: data.coverImage.large || data.coverImage.extraLarge,
             total_volumes: data.volumes,
             total_chapters: data.chapters,
             status: updates.status || libraryItem?.status || 'READING',

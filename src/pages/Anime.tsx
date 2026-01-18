@@ -42,7 +42,7 @@ export default function Anime() {
             media_id: mediaId,
             media_type: 'ANIME',
             title: data.title.english || data.title.romaji,
-            cover_image: data.coverImage.large,
+            cover_image: data.coverImage.large || data.coverImage.extraLarge,
             total_episodes: data.episodes,
             status: updates.status || libraryItem?.status || 'READING',
             progress_episode: updates.progress_episode ?? epProgress,

@@ -62,7 +62,6 @@ export default function Library() {
                             type={item.media_type.toLowerCase()}
                             image={item.cover_image}
                             title={item.title}
-                            rating={0} // We don't store score in lib usually, or wait for API
                             country={item.media_type === 'MANHWA' ? 'KR' : item.media_type === 'MANHUA' ? 'CN' : 'JP'}
                         />
                     ))}
