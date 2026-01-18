@@ -14,12 +14,6 @@ export default function Anime() {
 
     const [epProgress, setEpProgress] = useState(0);
 
-    const DIRECT_TYPES = ['PREQUEL', 'SEQUEL', 'PARENT', 'ADAPTATION', 'SIDE_STORY', 'SPIN_OFF'];
-
-    const relations = data.relations?.edges || [];
-    const directRelations = relations.filter((edge: any) => DIRECT_TYPES.includes(edge.relationType));
-    const otherRelations = relations.filter((edge: any) => !DIRECT_TYPES.includes(edge.relationType));
-
     useEffect(() => {
         if (libraryItem) {
             setEpProgress(libraryItem.progress_episode || 0);
@@ -54,6 +48,12 @@ export default function Anime() {
             progress_episode: updates.progress_episode ?? epProgress,
         });
     };
+
+    const DIRECT_TYPES = ['PREQUEL', 'SEQUEL', 'PARENT', 'ADAPTATION', 'SIDE_STORY', 'SPIN_OFF'];
+
+    const relations = data.relations?.edges || [];
+    const directRelations = relations.filter((edge: any) => DIRECT_TYPES.includes(edge.relationType));
+    const otherRelations = relations.filter((edge: any) => !DIRECT_TYPES.includes(edge.relationType));
 
     const isAdded = !!libraryItem;
 

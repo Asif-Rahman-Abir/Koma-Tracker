@@ -15,12 +15,6 @@ export default function Manga() {
     const [volProgress, setVolProgress] = useState(0);
     const [chProgress, setChProgress] = useState(0);
 
-    const DIRECT_TYPES = ['PREQUEL', 'SEQUEL', 'PARENT', 'ADAPTATION', 'SIDE_STORY', 'SPIN_OFF'];
-
-    const relations = data.relations?.edges || [];
-    const directRelations = relations.filter((edge: any) => DIRECT_TYPES.includes(edge.relationType));
-    const otherRelations = relations.filter((edge: any) => !DIRECT_TYPES.includes(edge.relationType));
-
     useEffect(() => {
         if (libraryItem) {
             setVolProgress(libraryItem.progress_volume || 0);
@@ -58,6 +52,12 @@ export default function Manga() {
             progress_chapter: updates.progress_chapter ?? chProgress,
         });
     };
+
+    const DIRECT_TYPES = ['PREQUEL', 'SEQUEL', 'PARENT', 'ADAPTATION', 'SIDE_STORY', 'SPIN_OFF'];
+
+    const relations = data.relations?.edges || [];
+    const directRelations = relations.filter((edge: any) => DIRECT_TYPES.includes(edge.relationType));
+    const otherRelations = relations.filter((edge: any) => !DIRECT_TYPES.includes(edge.relationType));
 
     const isAdded = !!libraryItem;
 
