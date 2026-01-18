@@ -6,11 +6,24 @@ interface CardProps {
     title: string;
     image: string;
     type: string;
+    country?: string;
     rating?: number;
     rank?: number;
 }
 
-export function Card({ id, title, image, type, rating, rank }: CardProps) {
+export function Card({ id, title, image, type, country, rating, rank }: CardProps) {
+    const getFormatBadge = () => {
+        if (type.toUpperCase() === 'ANIME') return 'Anime';
+        switch (country) {
+            case 'KR': return 'Manhwa';
+            case 'CN': return 'Manhua';
+            case 'JP': return 'Manga';
+            default: return 'Manga';
+        }
+    };
+
+    const formatBadge = getFormatBadge();
+
     return (
         <Link
             to={`/${type.toLowerCase()}/${id}`}
@@ -28,11 +41,16 @@ export function Card({ id, title, image, type, rating, rank }: CardProps) {
             </div>
 
             {/* Badges */}
-            {rank && rank <= 10 && (
-                <div className="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-black shadow-lg">
-                    #{rank}
+            <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
+                {rank && rank <= 10 && (
+                    <div className="flex h-6 w-6 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-black shadow-lg">
+                        #{rank}
+                    </div>
+                )}
+                <div className="px-2 py-0.5 rounded bg-purple-600/90 text-[10px] font-bold text-white shadow-sm backdrop-blur-sm uppercase tracking-wider">
+                    {formatBadge}
                 </div>
-            )}
+            </div>
 
             {rating && (
                 <div className="absolute top-2 right-2 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">

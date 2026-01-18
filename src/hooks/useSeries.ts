@@ -16,6 +16,7 @@ query($id: Int) {
     bannerImage
     description
     status
+    countryOfOrigin
     volumes
     chapters
     averageScore
@@ -40,13 +41,13 @@ query($id: Int) {
 `;
 
 export function useSeries(id: string | undefined) {
-    return useQuery({
-        queryKey: ['series', id],
-        queryFn: async () => {
-            if (!id) throw new Error('No ID provided');
-            const data = await fetchAniList(SERIES_QUERY, { id: parseInt(id) });
-            return data.Media;
-        },
-        enabled: !!id,
-    });
+  return useQuery({
+    queryKey: ['series', id],
+    queryFn: async () => {
+      if (!id) throw new Error('No ID provided');
+      const data = await fetchAniList(SERIES_QUERY, { id: parseInt(id) });
+      return data.Media;
+    },
+    enabled: !!id,
+  });
 }

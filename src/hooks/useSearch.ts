@@ -7,6 +7,7 @@ query($search: String) {
     media(search: $search, sort: POPULARITY_DESC, type: MANGA) {
       id
       type
+      countryOfOrigin
       title {
         romaji
         english
@@ -25,14 +26,14 @@ query($search: String) {
 `;
 
 export function useSearch(query: string) {
-    return useQuery({
-        queryKey: ['search', query],
-        queryFn: async () => {
-            if (!query) return [];
-            const data = await fetchAniList(SEARCH_QUERY, { search: query });
-            return data.Page.media;
-        },
-        enabled: !!query,
-        staleTime: 1000 * 60, // 1 minute
-    });
+  return useQuery({
+    queryKey: ['search', query],
+    queryFn: async () => {
+      if (!query) return [];
+      const data = await fetchAniList(SEARCH_QUERY, { search: query });
+      return data.Page.media;
+    },
+    enabled: !!query,
+    staleTime: 1000 * 60, // 1 minute
+  });
 }

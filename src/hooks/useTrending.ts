@@ -7,6 +7,7 @@ query($type: MediaType, $country: CountryCode) {
     media(sort: TRENDING_DESC, type: $type, countryOfOrigin: $country) {
       id
       type
+      countryOfOrigin
       title {
         romaji
         english
@@ -23,6 +24,7 @@ query($type: MediaType, $country: CountryCode) {
     media(sort: POPULARITY_DESC, type: $type, countryOfOrigin: $country) {
       id
       type
+      countryOfOrigin
       title {
         romaji
         english
@@ -41,6 +43,7 @@ query($type: MediaType, $country: CountryCode) {
     media(sort: SCORE_DESC, type: $type, countryOfOrigin: $country) {
       id
       type
+      countryOfOrigin
       title {
         romaji
         english
@@ -59,6 +62,7 @@ query($type: MediaType, $country: CountryCode) {
     media(sort: FAVOURITES_DESC, type: $type, countryOfOrigin: $country) {
       id
       type
+      countryOfOrigin
       title {
         romaji
         english

@@ -59,6 +59,7 @@ export default function Search() {
                                 key={item.id}
                                 id={item.id}
                                 type={item.type.toLowerCase()}
+                                country={item.countryOfOrigin}
                                 title={item.title.english || item.title.romaji}
                                 image={item.coverImage.large}
                                 rating={item.averageScore}
