@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { useLibrary } from '../hooks/useLibrary';
 import clsx from 'clsx';
-import { BookOpen, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { BookOpen, CheckCircle, Clock, Loader2, Trash2 } from 'lucide-react';
 
-type LibraryStatus = 'READING' | 'COMPLETED' | 'PLAN_TO_READ';
+type LibraryStatus = 'READING' | 'WATCHING' | 'FINISHED' | 'ON_HOLD' | 'DROPPED' | 'PLAN_TO_READ' | 'PLAN_TO_WATCH';
 type MediaType = 'ANIME' | 'MANGA';
 
 export default function Library() {
@@ -12,14 +12,31 @@ export default function Library() {
     const [activeType, setActiveType] = useState<MediaType>('ANIME');
     const { library, isLoading } = useLibrary();
 
+    // Default status when switching types
+    useEffect(() => {
+        if (activeType === 'ANIME' && (activeStatus === 'READING' || activeStatus === 'PLAN_TO_READ')) {
+            setActiveStatus(activeStatus === 'READING' ? 'WATCHING' : 'PLAN_TO_WATCH');
+        } else if (activeType === 'MANGA' && (activeStatus === 'WATCHING' || activeStatus === 'PLAN_TO_WATCH')) {
+            setActiveStatus(activeStatus === 'WATCHING' ? 'READING' : 'PLAN_TO_READ');
+        }
+    }, [activeType, activeStatus]);
+
     const filteredItems = library.filter(item =>
         item.status === activeStatus &&
         (activeType === 'MANGA' ? (item.media_type === 'MANGA' || item.media_type === 'MANHWA' || item.media_type === 'MANHUA') : item.media_type === 'ANIME')
     );
 
-    const statusTabs: { id: LibraryStatus; label: string; icon: any }[] = [
-        { id: 'READING', label: 'In Progress', icon: Clock },
-        { id: 'COMPLETED', label: 'Completed', icon: CheckCircle },
+    const statusTabs: { id: LibraryStatus; label: string; icon: any }[] = activeType === 'ANIME' ? [
+        { id: 'WATCHING', label: 'Watching', icon: Clock },
+        { id: 'ON_HOLD', label: 'On Hold', icon: Clock },
+        { id: 'FINISHED', label: 'Finished', icon: CheckCircle },
+        { id: 'DROPPED', label: 'Dropped', icon: Trash2 },
+        { id: 'PLAN_TO_WATCH', label: 'Plan to Watch', icon: BookOpen },
+    ] : [
+        { id: 'READING', label: 'Reading', icon: Clock },
+        { id: 'ON_HOLD', label: 'On Hold', icon: Clock },
+        { id: 'FINISHED', label: 'Finished', icon: CheckCircle },
+        { id: 'DROPPED', label: 'Dropped', icon: Trash2 },
         { id: 'PLAN_TO_READ', label: 'Plan to Read', icon: BookOpen },
     ];
 

@@ -1,8 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
 import { useLibrary } from '../hooks/useLibrary';
-import { CheckCircle, PlusCircle, MonitorPlay, Star, Trash2 } from 'lucide-react';
+import { CheckCircle, MonitorPlay, Star, Trash2, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import clsx from 'clsx';
 
 export default function Anime() {
     const { id } = useParams();
@@ -82,32 +83,66 @@ export default function Anime() {
                         />
                         <div className="mt-6 flex flex-col gap-3 max-w-xs mx-auto md:mx-0 md:max-w-64">
                             {!isAdded ? (
-                                <button
-                                    onClick={() => handleSync({ status: 'PLAN_TO_READ' })}
-                                    disabled={isUpdating}
-                                    className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
-                                >
-                                    <PlusCircle className="w-5 h-5" />
-                                    Add to Library
-                                </button>
+                                <div className="grid grid-cols-1 gap-2">
+                                    <button
+                                        onClick={() => handleSync({ status: 'WATCHING' })}
+                                        disabled={isUpdating}
+                                        className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                                    >
+                                        <MonitorPlay className="w-5 h-5" />
+                                        Start Watching
+                                    </button>
+                                    <button
+                                        onClick={() => handleSync({ status: 'PLAN_TO_WATCH' })}
+                                        disabled={isUpdating}
+                                        className="flex items-center justify-center gap-2 w-full py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold rounded-lg transition-colors border border-white/5 disabled:opacity-50 text-sm"
+                                    >
+                                        <Clock className="w-4 h-4" />
+                                        Plan to Watch
+                                    </button>
+                                </div>
                             ) : (
-                                <button
-                                    onClick={() => remove(mediaId!)}
-                                    disabled={isUpdating}
-                                    className="flex items-center justify-center gap-2 w-full py-3 bg-red-900/50 hover:bg-red-800 text-red-200 font-bold rounded-lg transition-colors border border-red-500/20 disabled:opacity-50"
-                                >
-                                    <Trash2 className="w-5 h-5" />
-                                    Remove from Library
-                                </button>
-                            )}
+                                <div className="space-y-3">
+                                    <div className="p-4 bg-purple-600/10 border border-purple-500/20 rounded-xl">
+                                        <div className="text-xs text-purple-400 uppercase font-black tracking-widest mb-1">Status</div>
+                                        <div className="text-lg font-bold text-white capitalize">{libraryItem.status.toLowerCase().replace('_', ' ')}</div>
+                                    </div>
 
-                            <button
-                                onClick={() => handleSync({ status: 'COMPLETED', progress_episode: data.episodes })}
-                                className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-semibold rounded-lg transition-colors"
-                            >
-                                <CheckCircle className="w-5 h-5" />
-                                Mark as Watched
-                            </button>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {[
+                                            { id: 'WATCHING', label: 'Watching', icon: MonitorPlay },
+                                            { id: 'ON_HOLD', label: 'On Hold', icon: Clock },
+                                            { id: 'FINISHED', label: 'Finished', icon: CheckCircle },
+                                            { id: 'DROPPED', label: 'Dropped', icon: Trash2 },
+                                            { id: 'PLAN_TO_WATCH', label: 'Planning', icon: Clock, full: true },
+                                        ].map((s) => (
+                                            <button
+                                                key={s.id}
+                                                onClick={() => handleSync({ status: s.id as any, progress_episode: s.id === 'FINISHED' ? data.episodes : undefined })}
+                                                disabled={isUpdating || libraryItem.status === s.id}
+                                                className={clsx(
+                                                    "flex items-center justify-center gap-2 p-3 rounded-lg border transition-all",
+                                                    s.full && "col-span-2",
+                                                    libraryItem.status === s.id
+                                                        ? "bg-purple-600 border-purple-400 text-white"
+                                                        : "bg-neutral-900 border-white/5 text-neutral-400 hover:bg-neutral-800"
+                                                )}
+                                            >
+                                                <s.icon className="w-4 h-4 shrink-0" />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">{s.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={() => remove(mediaId!)}
+                                        disabled={isUpdating}
+                                        className="flex items-center justify-center gap-2 w-full py-2 bg-red-900/10 hover:bg-red-900/20 text-red-400 text-xs font-bold rounded-lg transition-colors border border-red-500/10 disabled:opacity-50"
+                                    >
+                                        Remove from Library
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 

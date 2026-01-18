@@ -7,7 +7,7 @@ export interface LibraryItem {
     user_id: string;
     media_id: number;
     media_type: string;
-    status: 'READING' | 'COMPLETED' | 'PLAN_TO_READ' | 'DROPPED';
+    status: 'READING' | 'WATCHING' | 'COMPLETED' | 'FINISHED' | 'ON_HOLD' | 'DROPPED' | 'PLAN_TO_READ' | 'PLAN_TO_WATCH';
     progress_volume: number;
     progress_chapter: number;
     progress_episode: number;

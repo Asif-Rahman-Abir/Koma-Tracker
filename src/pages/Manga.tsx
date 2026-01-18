@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
 import { useLibrary } from '../hooks/useLibrary';
-import { BookOpen, CheckCircle, PlusCircle, Star, Layers, Trash2 } from 'lucide-react';
+import { BookOpen, CheckCircle, Star, Layers, Trash2, Clock } from 'lucide-react';
+import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 
 export default function Manga() {
@@ -86,32 +87,66 @@ export default function Manga() {
                         />
                         <div className="mt-6 flex flex-col gap-3 max-w-xs mx-auto md:mx-0 md:max-w-64">
                             {!isAdded ? (
-                                <button
-                                    onClick={() => handleSync({ status: 'PLAN_TO_READ' })}
-                                    disabled={isUpdating}
-                                    className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
-                                >
-                                    <PlusCircle className="w-5 h-5" />
-                                    Add to Library
-                                </button>
+                                <div className="grid grid-cols-1 gap-2">
+                                    <button
+                                        onClick={() => handleSync({ status: 'READING' })}
+                                        disabled={isUpdating}
+                                        className="flex items-center justify-center gap-2 w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                                    >
+                                        <BookOpen className="w-5 h-5" />
+                                        Start Reading
+                                    </button>
+                                    <button
+                                        onClick={() => handleSync({ status: 'PLAN_TO_READ' })}
+                                        disabled={isUpdating}
+                                        className="flex items-center justify-center gap-2 w-full py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold rounded-lg transition-colors border border-white/5 disabled:opacity-50 text-sm"
+                                    >
+                                        <Clock className="w-4 h-4" />
+                                        Plan to Read
+                                    </button>
+                                </div>
                             ) : (
-                                <button
-                                    onClick={() => remove(mediaId!)}
-                                    disabled={isUpdating}
-                                    className="flex items-center justify-center gap-2 w-full py-3 bg-red-900/50 hover:bg-red-800 text-red-200 font-bold rounded-lg transition-colors border border-red-500/20 disabled:opacity-50"
-                                >
-                                    <Trash2 className="w-5 h-5" />
-                                    Remove from Library
-                                </button>
-                            )}
+                                <div className="space-y-3">
+                                    <div className="p-4 bg-purple-600/10 border border-purple-500/20 rounded-xl">
+                                        <div className="text-xs text-purple-400 uppercase font-black tracking-widest mb-1">Status</div>
+                                        <div className="text-lg font-bold text-white capitalize">{libraryItem.status.toLowerCase().replace('_', ' ')}</div>
+                                    </div>
 
-                            <button
-                                onClick={() => handleSync({ status: 'COMPLETED', progress_chapter: data.chapters, progress_volume: data.volumes })}
-                                className="flex items-center justify-center gap-2 w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-semibold rounded-lg transition-colors"
-                            >
-                                <CheckCircle className="w-5 h-5" />
-                                Mark as Read
-                            </button>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {[
+                                            { id: 'READING', label: 'Reading', icon: BookOpen },
+                                            { id: 'ON_HOLD', label: 'On Hold', icon: Clock },
+                                            { id: 'FINISHED', label: 'Finished', icon: CheckCircle },
+                                            { id: 'DROPPED', label: 'Dropped', icon: Trash2 },
+                                            { id: 'PLAN_TO_READ', label: 'Planning', icon: Clock, full: true },
+                                        ].map((s) => (
+                                            <button
+                                                key={s.id}
+                                                onClick={() => handleSync({ status: s.id as any, progress_chapter: s.id === 'FINISHED' ? data.chapters : undefined, progress_volume: s.id === 'FINISHED' ? data.volumes : undefined })}
+                                                disabled={isUpdating || libraryItem.status === s.id}
+                                                className={clsx(
+                                                    "flex items-center justify-center gap-2 p-3 rounded-lg border transition-all",
+                                                    s.full && "col-span-2",
+                                                    libraryItem.status === s.id
+                                                        ? "bg-purple-600 border-purple-400 text-white"
+                                                        : "bg-neutral-900 border-white/5 text-neutral-400 hover:bg-neutral-800"
+                                                )}
+                                            >
+                                                <s.icon className="w-4 h-4 shrink-0" />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">{s.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        onClick={() => remove(mediaId!)}
+                                        disabled={isUpdating}
+                                        className="flex items-center justify-center gap-2 w-full py-2 bg-red-900/10 hover:bg-red-900/20 text-red-400 text-xs font-bold rounded-lg transition-colors border border-red-500/10 disabled:opacity-50"
+                                    >
+                                        Remove from Library
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -147,7 +182,7 @@ export default function Manga() {
                             </div>
                             <div className="w-px h-4 bg-white/10" />
                             <div className="flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${data.status === 'RELEASING' ? 'bg-green-500' : 'bg-neutral-500'}`} />
+                                <span className={`w - 2 h - 2 rounded - full ${data.status === 'RELEASING' ? 'bg-green-500' : 'bg-neutral-500'} `} />
                                 <span className="uppercase text-xs font-bold tracking-wider">{data.status}</span>
                             </div>
                         </div>
@@ -181,7 +216,7 @@ export default function Manga() {
                                     <div className="h-2 bg-neutral-700 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-purple-500 transition-all duration-300"
-                                            style={{ width: `${data.volumes ? (volProgress / data.volumes) * 100 : 0}%` }}
+                                            style={{ width: `${data.volumes ? (volProgress / data.volumes) * 100 : 0}% ` }}
                                         />
                                     </div>
                                 </div>
@@ -206,7 +241,7 @@ export default function Manga() {
                                     <div className="h-2 bg-neutral-700 rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-blue-500 transition-all duration-300"
-                                            style={{ width: `${data.chapters ? (chProgress / data.chapters) * 100 : 0}%` }}
+                                            style={{ width: `${data.chapters ? (chProgress / data.chapters) * 100 : 0}% ` }}
                                         />
                                     </div>
                                 </div>
@@ -227,7 +262,7 @@ export default function Manga() {
                                         {directRelations.map((edge: any) => (
                                             <Link
                                                 key={edge.node.id}
-                                                to={`/${edge.node.type.toLowerCase()}/${edge.node.id}`}
+                                                to={`/ ${edge.node.type.toLowerCase()}/${edge.node.id}`}
                                                 className="group cursor-pointer"
                                             >
                                                 <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2 shadow-lg">
@@ -242,43 +277,45 @@ export default function Manga() {
                                                 </div>
                                                 <div className="text-xs text-purple-400 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
                                                 <div className="line-clamp-2 text-sm font-medium text-neutral-200 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
-                                            </Link>
+                                            </Link >
                                         ))}
-                                    </div>
-                                </div>
+                                    </div >
+                                </div >
                             )}
 
-                            {recommendations.length > 0 && (
-                                <div>
-                                    <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Similar Content</h3>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
-                                        {recommendations.map((rec: any) => (
-                                            <Link
-                                                key={rec.id}
-                                                to={`/${rec.type.toLowerCase()}/${rec.id}`}
-                                                className="group cursor-pointer"
-                                            >
-                                                <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2 shadow-sm border border-white/5">
-                                                    <img
-                                                        src={rec.coverImage.medium}
-                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                        alt={rec.title.romaji}
-                                                    />
-                                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 rounded text-[10px] font-bold uppercase text-white backdrop-blur-md">
-                                                        {rec.type}
+                            {
+                                recommendations.length > 0 && (
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Similar Content</h3>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+                                            {recommendations.map((rec: any) => (
+                                                <Link
+                                                    key={rec.id}
+                                                    to={`/${rec.type.toLowerCase()}/${rec.id}`}
+                                                    className="group cursor-pointer"
+                                                >
+                                                    <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2 shadow-sm border border-white/5">
+                                                        <img
+                                                            src={rec.coverImage.medium}
+                                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                            alt={rec.title.romaji}
+                                                        />
+                                                        <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 rounded text-[10px] font-bold uppercase text-white backdrop-blur-md">
+                                                            {rec.type}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="line-clamp-2 text-sm font-medium text-neutral-400 group-hover:text-purple-400 transition-colors">{rec.title.romaji}</div>
-                                            </Link>
-                                        ))}
+                                                    <div className="line-clamp-2 text-sm font-medium text-neutral-400 group-hover:text-purple-400 transition-colors">{rec.title.romaji}</div>
+                                                </Link>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                                )
+                            }
+                        </div >
+                    </div >
 
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 }

@@ -21,7 +21,7 @@ export default function Profile() {
 
     // Stats Calculations
     const totalMedia = library.length;
-    const completed = library.filter(i => i.status === 'COMPLETED').length;
+    const completed = library.filter(item => item.status === 'COMPLETED' || item.status === 'FINISHED').length;
     const totalChapters = library.reduce((acc, curr) => acc + (curr.progress_chapter || 0), 0);
     const totalEpisodes = library.reduce((acc, curr) => acc + (curr.progress_episode || 0), 0);
 
