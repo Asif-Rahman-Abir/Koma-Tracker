@@ -39,6 +39,20 @@ query($id: Int) {
         }
       }
     }
+    recommendations(perPage: 10, sort: RATING_DESC) {
+      nodes {
+        mediaRecommendation {
+          id
+          title {
+            romaji
+          }
+          coverImage {
+            medium
+          }
+          type
+        }
+      }
+    }
   }
 }
 `;

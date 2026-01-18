@@ -57,7 +57,10 @@ export default function Manga() {
 
     const relations = data.relations?.edges || [];
     const directRelations = relations.filter((edge: any) => DIRECT_TYPES.includes(edge.relationType));
-    const otherRelations = relations.filter((edge: any) => !DIRECT_TYPES.includes(edge.relationType));
+
+    const recommendations = data.recommendations?.nodes
+        ?.map((node: any) => node.mediaRecommendation)
+        .filter(Boolean) || [];
 
     const isAdded = !!libraryItem;
 
@@ -245,28 +248,27 @@ export default function Manga() {
                                 </div>
                             )}
 
-                            {otherRelations.length > 0 && (
+                            {recommendations.length > 0 && (
                                 <div>
-                                    <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Related Content</h3>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 opacity-80 hover:opacity-100 transition-opacity">
-                                        {otherRelations.map((edge: any) => (
+                                    <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Similar Content</h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+                                        {recommendations.map((rec: any) => (
                                             <Link
-                                                key={edge.node.id}
-                                                to={`/${edge.node.type.toLowerCase()}/${edge.node.id}`}
+                                                key={rec.id}
+                                                to={`/${rec.type.toLowerCase()}/${rec.id}`}
                                                 className="group cursor-pointer"
                                             >
-                                                <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2">
+                                                <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2 shadow-sm border border-white/5">
                                                     <img
-                                                        src={edge.node.coverImage.medium}
-                                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                        alt={edge.node.title.romaji}
+                                                        src={rec.coverImage.medium}
+                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                        alt={rec.title.romaji}
                                                     />
-                                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/80 rounded text-[10px] font-bold uppercase text-white backdrop-blur-sm">
-                                                        {edge.node.type}
+                                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 rounded text-[10px] font-bold uppercase text-white backdrop-blur-md">
+                                                        {rec.type}
                                                     </div>
                                                 </div>
-                                                <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
-                                                <div className="line-clamp-2 text-sm font-medium text-neutral-400 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
+                                                <div className="line-clamp-2 text-sm font-medium text-neutral-400 group-hover:text-purple-400 transition-colors">{rec.title.romaji}</div>
                                             </Link>
                                         ))}
                                     </div>
