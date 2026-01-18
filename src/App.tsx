@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Series from './pages/Series';
 import Manga from './pages/Manga';
 import Anime from './pages/Anime';
 import Search from './pages/Search';
+import Library from './pages/Library';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/series/:id" element={<Series />} />
+        <Route path="/library" element={<Library />} />
         <Route path="/manga/:id" element={<Manga />} />
         <Route path="/anime/:id" element={<Anime />} />
         <Route path="/login" element={<Login />} />
