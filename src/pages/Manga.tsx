@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useSeries } from '../hooks/useSeries';
 import { BookOpen, CheckCircle, PlusCircle, Star, Layers } from 'lucide-react';
 
@@ -133,7 +133,11 @@ export default function Manga() {
                                 <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-2">Related Content</h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {data.relations.edges.map((edge: any) => (
-                                        <div key={edge.node.id} className="group cursor-pointer">
+                                        <Link
+                                            key={edge.node.id}
+                                            to={`/${edge.node.type.toLowerCase()}/${edge.node.id}`}
+                                            className="group cursor-pointer"
+                                        >
                                             <div className="relative aspect-[2/3] overflow-hidden rounded-lg mb-2">
                                                 <img
                                                     src={edge.node.coverImage.medium}
@@ -146,7 +150,7 @@ export default function Manga() {
                                             </div>
                                             <div className="text-xs text-purple-400 font-bold uppercase tracking-wider mb-1">{edge.relationType?.replace('_', ' ')}</div>
                                             <div className="line-clamp-2 text-sm font-medium text-neutral-200 group-hover:text-white transition-colors">{edge.node.title.romaji}</div>
-                                        </div>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
