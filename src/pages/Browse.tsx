@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTrending, type ContentFormat } from '../hooks/useTrending';
-import { Hero } from '../components/ui/Hero';
+import { HeroCarousel } from '../components/ui/HeroCarousel';
 import { Card } from '../components/ui/Card';
 import clsx from 'clsx';
 
@@ -54,14 +54,7 @@ export default function Browse() {
             ) : (
                 <>
                     {/* Hero Section */}
-                    {data.hero && (
-                        <Hero
-                            id={data.hero.id}
-                            title={data.hero.title.english || data.hero.title.romaji}
-                            description={data.hero.description?.replace(/<[^>]*>/g, '') || ''}
-                            image={data.hero.bannerImage || data.hero.coverImage.extraLarge}
-                        />
-                    )}
+                    <HeroCarousel items={data.heroes} />
 
                     {/* Popular Section */}
                     <section>

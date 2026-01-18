@@ -1,6 +1,6 @@
 import { useTrending } from '../hooks/useTrending';
 import { useRecommendations } from '../hooks/useRecommendations';
-import { Hero } from '../components/ui/Hero';
+import { HeroCarousel } from '../components/ui/HeroCarousel';
 import { Card } from '../components/ui/Card';
 
 export default function Home() {
@@ -23,14 +23,7 @@ export default function Home() {
             ) : (
                 <>
                     {/* Hero Section */}
-                    {data.hero && (
-                        <Hero
-                            id={data.hero.id}
-                            title={data.hero.title.english || data.hero.title.romaji}
-                            description={data.hero.description?.replace(/<[^>]*>/g, '') || ''}
-                            image={data.hero.bannerImage || data.hero.coverImage.extraLarge}
-                        />
-                    )}
+                    <HeroCarousel items={data.heroes} />
 
                     {/* For You Section (Personalized Recommendations across all types) */}
                     {recs && recs.length > 0 && (

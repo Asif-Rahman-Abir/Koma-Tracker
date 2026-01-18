@@ -3,7 +3,7 @@ import { fetchAniList } from '../lib/api';
 
 const TRENDING_QUERY = `
 query($type: MediaType, $country: CountryCode) {
-  trending: Page(page: 1, perPage: 1) {
+  trending: Page(page: 1, perPage: 5) {
     media(sort: TRENDING_DESC, type: $type, countryOfOrigin: $country) {
       id
       type
@@ -106,7 +106,7 @@ export function useTrending(format: ContentFormat) {
     queryFn: async () => {
       const data = await fetchAniList(TRENDING_QUERY, vars);
       return {
-        hero: data.trending.media[0],
+        heroes: data.trending.media,
         popular: data.popular.media,
         topRated: data.topRated.media,
         favourites: data.favourites.media,
