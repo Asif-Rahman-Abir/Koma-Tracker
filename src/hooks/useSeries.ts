@@ -16,7 +16,9 @@ query($id: Int) {
     bannerImage
     description
     status
+    format
     countryOfOrigin
+    episodes
     volumes
     chapters
     averageScore
